@@ -1,11 +1,8 @@
 #include <iostream>
 #include <string>
-#include "controller/TTTController.cpp"
+#include "controller/TTTController.h"
 
 using namespace std;
-
-
-
 
 int main(){
     TTTController controller;

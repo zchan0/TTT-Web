@@ -1,20 +1,7 @@
 #include <iostream>
-#include "../model/Player.h"
-#include "../model/Board.h"
+#include "TTTController.h"
 
 Board* Board::instance = NULL;	// Singleton
-
-class TTTController
-{
-	public:
-		int  determineWinner();
-		void startNewGame();
-		bool setSelection(int row, int col, int currentPlayer);	
-		void createPlayer(std::string name, std::string marker, int playerNum = 1);
-		std::string getGameDisplay();
-	private:
-		Player A, B;
-};
 
 /**
  * Can create two players at most, any more calls will be ignored

@@ -5,8 +5,8 @@ H       = h
 CFLAGS  = -g -Wall -Wextra -pedantic
 #LDFLAGS = -lm
 
-HFILES  = model/Player.${H} model/Board.${H}
-OBJS    = model/Player.o model/Board.o
+HFILES  = model/Player.${H} model/Board.${H} controller/TTTController.${H}
+OBJS    = model/Player.o model/Board.o controller/TTTController.o
 
 TARGET = ttt
 
@@ -15,6 +15,9 @@ ${TARGET}: ${OBJS} main.o
 
 main.o: main.cpp ${HFILES}
 	${CC} ${CFLAGS} -c main.cpp
+
+TTTController.o: controller/TTTController.${C} ${HFILES}
+	${CC} ${CFLAGS} -c TTTController.${C}	
 
 Player.o: model/Player.${C} ${HFILES}
 	${CC} ${CFLAGS} -c Player.${C}
