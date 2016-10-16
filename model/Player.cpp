@@ -49,6 +49,9 @@ void Player::setSelection(int row, int col)
 	// if (row, col) locates in diagonal or antidiagonal, add 1
 	if (row == col) {
 		sumTable[DIMENSION * 2] += 1; 
+		// center, also in antidiagonal line
+		if (row == 1)
+			sumTable[DIMENSION * 2 + 1] += 1;
 	} else if (row + col == DIMENSION - 1) {
 		sumTable[DIMENSION * 2 + 1] += 1;
 	}
