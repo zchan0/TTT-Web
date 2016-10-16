@@ -1,0 +1,58 @@
+body {
+	background-color: #58B3B6;
+	color: #fff;
+}
+
+h1 {
+	font-size: 30px;
+	text-align: center;
+}
+
+.info {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.player {
+	margin-top: 20px;
+}
+
+.board {
+	width: 450px;
+	height: 450px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.row {
+	display: -webkit-flex;
+	display: flex;
+	width: 450px;
+	height: 150px;
+}
+
+.square {
+	width: 150px;
+	height: 150px;
+	border-width: 2px;
+}
+
+.square.top {
+	border-bottom-style: solid;
+}
+
+.square.bottom {
+	border-top-style: solid;
+}
+
+.square.left {
+	border-right-style: solid;
+}
+
+.square.right {
+	border-left-style: solid;;
+}
+
+.status {
+	margin-top: 50px;
+}
