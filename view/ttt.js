@@ -1,13 +1,20 @@
+var cgiPath = "cgi-bin/ttt.cgi";
 var rows = ["top", "", "bottom"];
 var markers = [];
 
-var cgiPath = "cgi-bin/ttt.cgi";
+var xhttp = new XMLHttpRequest();
+
+var tttJsonObj = 
+{
+	controllerMethod:{},
+	players:[],
+	board:{},
+	game:{}
+};
 
 callback();
 
-function callback() {
-	var xhttp = new XMLHttpRequest();
-	
+function callback() {	
 	/**Handle the returned JSON string; after xhttp.send() finishes**/
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
@@ -33,6 +40,20 @@ function callback() {
   xhttp.send();
 }
 
+function send() {
+	xhttp.open("POST", cgiPath, true);  
+	xhttp.send(JSON.stringify(tttJsonObj));	
+}
+
+function toggleDisplay(divElement) {
+	if(divElement.style.display == 'block')
+        divElement.style.display = 'none';
+    else
+        divElement.style.display = 'block';
+}
+
+/** Make Request Helpers */
+
 function reset() {
 	console.log("reset");
 }
@@ -40,6 +61,33 @@ function reset() {
 function clickSquare(event) {
 	console.log(event.target.className);
 }
+
+function addNewPlayer() {
+	var playerOne = document.getElementsByClassName("player one")[0].innerHTML;
+	var playerTwo = document.getElementsByClassName("player two")[0].innerHTML;
+	var name   = document.getElementById("name").value;
+	var marker = document.getElementById("marker").value;
+	if (playerOne.length == 8) {
+		populatePlayer(1, name, marker);
+	} else if (playerTwo.length == 8) {
+		populatePlayer(2, name, marker);
+	} else {
+		alert("There are already two players, start play!");
+	}
+}
+
+function populatePlayer(num, name, marker) {
+	var player = {};
+	player.num    = num;
+	player.name   = name;
+	player.marker = marker;
+	tttJsonObj.controllerMethod.name  = "createPlayer";
+	tttJsonObj.controllerMethod.input = player;
+	xhttp.open("POST", cgiPath, true);  
+	xhttp.send(JSON.stringify(tttJsonObj));
+}
+
+/** Hanldle Responses */
 
 function setSelection(row, col, marker) {
 	// to determin which square
