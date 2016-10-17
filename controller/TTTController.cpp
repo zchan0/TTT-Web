@@ -15,11 +15,28 @@ void TTTController::createPlayer(std::string name, std::string marker, int playe
 	}
 }
 
+/**
+ * format of playerJsonObject: {name:string, marker:string, playerNum:int}
+ */
+void TTTController::createPlayer(std::string playerJsonObject)
+{
+	std::cout << playerJsonObject << std::endl;
+}
+
 void TTTController::startNewGame()
 {
 	Board::getInstance() -> reset();
 	A.reset();
 	B.reset();
+}
+
+/**
+ * @param  gameJsonObject {row:int, col:int, int: currentPlayer }
+ * @return                as below
+ */
+bool TTTController::setSelection(std::string gameJsonObject)
+{
+
 }
 
 /**
@@ -78,7 +95,24 @@ int TTTController::determineWinner()
 	return 0;
 }
 
+/**
+ * @return        {gameBoard : [{row:int, col:int, marker:string}]
+ */
+std::string TTTController::getGameDisplay(bool isJson)
+{
+	if (isJson) {
+		
+	} else {
+		getGameDisplay();
+	}
+}
+
 std::string TTTController::getGameDisplay()
 {
 	return Board::getInstance() -> getDisplayString(A.getMarker(), B.getMarker());
+}
+
+std::string TTTController::getAllSavedPlayers()
+{
+
 }

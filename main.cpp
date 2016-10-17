@@ -1,77 +1,32 @@
 #include <iostream>
+#include <sstream>
 #include <string>
 #include "controller/TTTController.h"
 
-using namespace std;
-
 int main(){
-    TTTController controller;
-    controller.createPlayer("Sue", "S", 1);
-    controller.createPlayer("John", "J", 2);
-    
-	controller.startNewGame();
-    cout << controller.getGameDisplay()<< endl;
-	
-	bool validSelection = false; //this particular test only expects valid (true) returns for setSelection()
-	int winner = -1; //initialize to any int that is not an expected status
+    std::cout << "content-type: text/html\n\n"; 
 
-    //Step1
-    validSelection = controller.setSelection(1, 1, 1);    
-    if(!validSelection){
-    	cout << "Failed testCase: step1 setSelection player1" <<endl;
-    	return 0;
-	}
-    
-    validSelection = controller.setSelection(2, 1, 2);
-    if(!validSelection){
-    	cout << "Failed testCase: step1 setSelection player2" <<endl;
-    	return 0;
-	}
+    std::stringstream post;
+    post << std::cin.rdbuf();
+    std::string incomingJsonObjectString = post.str();
+    /**Example of incomingJsonObjectString
+       {"dealership":{"name":"Brown Auto","city":"Atlanta"},"vehicles":{},"controllerMethod":{"name":"addVehicle","input":{"make":"ford","color":"red","year":2012}}}
+    **/ 
 
-    cout << controller.getGameDisplay()<< endl;
-    
-    winner = controller.determineWinner();
-    if(winner !=0){
-    	cout << "Failed testCase after step1" <<endl;
-    	return 0;
-	}
-    
-    //Step2
-    validSelection = controller.setSelection(2, 0, 1);
-    if(!validSelection){
-    	cout << "Failed testCase: step2 setSelection player1" <<endl;
-    	return 0;
-	}
+    /**
+    insert code here:
+        1. Call your implementation of a JSON reader that can parse the incoming string/jsonObject using only C++, STL   
+        
+        2. Use the controllerMethod (or whatever you want to name it) to decide which controller method to call. Ex
+           if  controllerMethod.name == "addVehicle" 
+                controller.addVehicle(controllerMethod.input)
+                        //this method then calls whatever model and persistence objects you've created
+                
+        3. Call your implementation of a JSON writer that can compose and return the full, updated jsonObject string                    
+    **/
 
-    validSelection = controller.setSelection(1, 2, 2);
-     if(!validSelection){
-    	cout << "Failed testCase: step2 setSelection player2" <<endl;
-    	return 0;
-	}
+    //Mock data for UI example
+    std::string mockResponse = "{\"game\":{\"row\":1,\"col\":1,\"currentPlayer\":1,\"winner\":0},\"players\":[{\"name\":\"Cece\",\"marker\":\"C\"}, {\"name\":\"Sam\",\"marker\":\"S\"}]}";
 
-    cout << controller.getGameDisplay()<< endl;
-
-    winner = controller.determineWinner();
-    if(winner !=0){
-    	cout << "Failed testCase after step2" <<endl;
-    	return 0;
-	}
-    
-    //Step3
-    validSelection = controller.setSelection(0, 2, 1);
-    if(!validSelection){
-    	cout << "Failed testCase: step3 setSelection player1" <<endl;
-    	return 0;
-	}
-
-    cout << controller.getGameDisplay()<< endl;
-    
-	winner = controller.determineWinner();
-    if(winner !=1){
-    	cout << "Failed testCase after step3" <<endl;
-    	return 0;
-	}else{
-        cout << "TestCase1 with  Player1  as winner is successful" << endl;
-	}
-
+    std::cout << mockResponse;
 }
