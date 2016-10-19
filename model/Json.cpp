@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <cstdio>
 #include <string>
 
 #include "Json.h"
@@ -141,12 +142,12 @@ void Json::dump(const Json::object &values, std::string &out) const
 {
 	bool first = true;
 	out += "{";
-	for (const auto &kv : values) {
+	for (Json::object::const_iterator it = values.begin(); it != values.end(); it++) {
 		if (!first)
 			out += ",";
-		dump(kv.first, out);
+		dump(it -> first, out);
 		out += ": ";
-		kv.second.dump(out);
+		it -> second.dump(out);
 		first = false;
 	}
 	out += "}";
@@ -156,10 +157,10 @@ void Json::dump(const Json::array &values, std::string &out) const
 {
 	bool first = true;
 	out += "[";
-	for (const auto &value : values) {
+	for (Json::array::const_iterator it = values.begin(); it != values.end(); it++) {
 		if (!first)
 			out += ", ";
-		value.dump(out);
+		(*it).dump(out);
 		first = false;
 	}
 	out += "]";
