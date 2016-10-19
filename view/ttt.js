@@ -27,6 +27,24 @@ function callback() {
   xhttp.send(JSON.stringify(tttJsonObj));
 }
 
+function resetGame() {
+	// reset UI
+	
+	setSelection(1, 1, "");
+	setSelection(1, 2, "");
+	setSelection(1, 3, "");
+	setSelection(2, 1, "");
+	setSelection(2, 2, "");
+	setSelection(2, 3, "");
+	setSelection(3, 1, "");
+	setSelection(3, 2, "");
+	setSelection(3, 3, "");
+
+	setWinner(0);
+	// reset controllerMethods
+	tttJsonObj.controllerMethods = [];
+}
+
 function toggleDisplay(divElement) {
 	if(divElement.style.display == 'block')
         divElement.style.display = 'none';
@@ -36,15 +54,12 @@ function toggleDisplay(divElement) {
 
 /** Make Request Helpers */
 
-function reset() {
-	// reset UI
-	// reset controllerMethods
-}
-
 function clickSquare(event) {
-	// if (playerOne.length == 8 || playerTwo.length == 8) {
-	// 	alert("Need add new player");
-	// }
+	var playerOne = document.getElementsByClassName("player one")[0].innerHTML;
+	var playerTwo = document.getElementsByClassName("player two")[0].innerHTML;
+	if (playerOne.length == 8 || playerTwo.length == 8) {
+		alert("Need add new player");
+	}
 
 	var pos = event.target.id;
 	var row = parseInt(pos[0], 10);
@@ -106,6 +121,9 @@ function populatePlayer(num, name, marker) {
 
 function setSelection(row, col, marker) {
 	// to determin which square
+	if (marker === undefined) {
+		return;
+	}
 	var id = row * 10 + col;
 	document.getElementById(id.toString()).innerHTML = marker;
 }
@@ -115,7 +133,7 @@ function setWinner(winner) {
 	var info = "";
 	if (winner != 0 && winner != 3) {
 		info = "Player " + winnerStr + " won!  ";
-	} else {
+	} else if (winner == 3) {
 		info = "Tied!";
 	}
 	document.getElementById("winner").innerHTML = info;

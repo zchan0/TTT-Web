@@ -25,19 +25,15 @@ int main(){
         std::string controllerMethod = controllerJson["name"].stringValue();
         Json inputJson = controllerJson["input"];
 
-        // std::cout << controllerMethod << std::endl;
-
         if (controllerMethod == "createPlayer") {
             std::string playerJsonStr;
             inputJson.dump(playerJsonStr);
-            // std::cout << playerJsonStr << std::endl;
             controller.createPlayer(playerJsonStr);
         }
 
         if (controllerMethod == "setSelection") {
             std::string gameJsonStr;
             inputJson.dump(gameJsonStr);
-            // std::cout << gameJsonStr << std::endl;
             if (controller.setSelection(gameJsonStr) && controller.determineWinner() != 0) {
                 std::cout << "{\"winner\": " << controller.determineWinner() << "}";
             }
