@@ -5,8 +5,8 @@ H       = h
 CFLAGS  = -g -Wall -Wextra -pedantic
 #LDFLAGS = -lm
 
-HFILES  = model/Player.${H} model/Board.${H} model/Json.${H} controller/TTTController.${H}
-OBJS    = model/Player.o model/Board.o model/Json.o controller/TTTController.o
+HFILES  = model/Player.${H} model/Board.${H} model/Json.${H} controller/TTTController.${H} controller/DataManager.${H}
+OBJS    = model/Player.o model/Board.o model/Json.o controller/TTTController.o controller/DataManager.o
 
 TARGET = ttt
 
@@ -27,6 +27,9 @@ Board.o: model/Board.${C} ${HFILES}
 
 Json.o: model/Json.${C} ${HFILES}
 	${CC} ${CFLAGS} -c Json.${C}
+
+DataManager.o: controller/DataManager.${C} ${HFILES}
+	${CC} ${CFLAGS} -c DataManager.${C}
 
 clean:
 	rm -rf *.o 
