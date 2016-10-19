@@ -18,6 +18,14 @@ class Json
 		explicit Json(const object &objects);
 		explicit Json(const std::string &value);
 
+		/** Dump */
+		void dump(std::string &out) const;
+		void dump(int value, std::string &out) const;
+		void dump(bool value, std::string &out) const;
+		void dump(const object &values, std::string &out) const;
+		void dump(const array  &values, std::string &out) const;
+		void dump(const std::string &value, std::string &out) const;
+
 		/** Overloads */
 		const Json& operator[](size_t i);
 		const Json& operator[](const std::string &key);

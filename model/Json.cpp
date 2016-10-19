@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include <string>
 
 #include "Json.h"
@@ -93,6 +94,92 @@ std::ostream& operator<<(std::ostream &out, const Json &json)
 			break;
 		case Json::NIL: case Json::ARRAY: case Json::OBJECT: 
 		default:
+			break;
+	}
+}
+
+void Json::dump(int value, std::string &out) const
+{
+	char buf[32];
+	snprintf(buf, sizeof buf, "%d", value);
+	out += buf;
+}
+
+void Json::dump(bool value, std::string &out) const
+{
+	out += value ? "true" : "false";
+}
+
+void Json::dump(const std::string &value, std::string &out) const
+{
+	out += '"';
+	for (size_t i = 0; i < value.length(); ++i) {
+		const char ch = value[i];
+		switch(ch) {
+			case '\\':
+				out += "\\\\"; break;
+			case '"':
+				out += "\\\""; break;
+			case '\b':
+				out += "\\b";  break;
+			case '\f':
+				out += "\\f";  break;
+			case '\n':
+				out += "\\n";  break;
+			case '\r':
+				out += "\\r";  break;
+			case '\t':
+				out += "\\t";  break;
+			default:
+				out += ch; 		 break;
+		}
+	}
+	out += '"';
+}
+
+void Json::dump(const Json::object &values, std::string &out) const
+{
+	bool first = true;
+	out += "{";
+	for (const auto &kv : values) {
+		if (!first)
+			out += ",";
+		dump(kv.first, out);
+		out += ": ";
+		kv.second.dump(out);
+		first = false;
+	}
+	out += "}";
+}
+
+void Json::dump(const Json::array &values, std::string &out) const
+{
+	bool first = true;
+	out += "[";
+	for (const auto &value : values) {
+		if (!first)
+			out += ", ";
+		value.dump(out);
+		first = false;
+	}
+	out += "]";
+}
+
+void Json::dump(std::string &out) const
+{
+	switch(json_type) {
+		case Json::BOOLE:
+			dump(bool_value, out);     break;
+		case Json::NUMBER:
+			dump(int_value, out);      break;
+		case Json::STRING:
+			dump(string_value, out);   break;
+		case Json::ARRAY:
+			dump(array_items, out);    break;
+		case Json::OBJECT:
+			dump(object_items, out); 	 break;
+		case Json::NIL:
+		default: 
 			break;
 	}
 }
@@ -229,7 +316,7 @@ Json JsonParser::parseJson()
 				if (ch != ':')
 					throw "expected ':' in object";
 
-				data[std::move(key)] = parseJson();
+				data[key] = parseJson();
 
 				ch = getNextToken();
 				if (ch == '}') 
