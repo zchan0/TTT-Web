@@ -10,9 +10,9 @@ class TTTController
 		std::string getAllSavedPlayers();
 
 		void startNewGame();
-		void createPlayer(std::string playerJsonObject);
+		void createPlayer(std::string playerJsonStr);
 		void createPlayer(std::string name, std::string marker, int playerNum = 1);
-		bool setSelection(std::string gameJsonObject);
+		bool setSelection(std::string gameJsonStr);
 		bool setSelection(int row, int col, int currentPlayer);	
 		
 	private:

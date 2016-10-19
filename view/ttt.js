@@ -78,9 +78,9 @@ function addNewPlayer() {
 
 function populatePlayer(num, name, marker) {
 	var player = {};
-	player.num    = num;
 	player.name   = name;
 	player.marker = marker;
+	player.playerNum = num;
 	tttJsonObj.controllerMethod.name  = "createPlayer";
 	tttJsonObj.controllerMethod.input = player;
 	xhttp.open("POST", cgiPath, true);  

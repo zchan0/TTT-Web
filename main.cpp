@@ -6,24 +6,29 @@
 #include "model/Json.h"
 
 int main(){
-    // std::cout << "content-type: text/html\n\n"; 
+    std::cout << "content-type: text/html\n\n"; 
 
-    // std::stringstream post;
-    // post << std::cin.rdbuf();
-    // std::string incomingJsonObjectString = post.str();
+    std::stringstream post;
+    post << std::cin.rdbuf();
+    std::string incomingJsonObjectString = post.str();
 
  
-    std::string mockresponese = "{\"controllerMethod\":{\"name\":\"createPlayer\",\"input\":{\"num\":1,\"name\":\"Cece\",\"marker\":\"C\"}},\"players\":[],\"board\":{},\"game\":{}}";
+    // std::string mockresponese = "{\"controllerMethod\":{\"name\":\"createPlayer\",\"input\":{\"playerNum\":1,\"name\":\"Cece\",\"marker\":\"C\"}},\"players\":[],\"board\":{},\"game\":{}}";
  
-    JsonParser  parser = JsonParser(mockresponese);
+    JsonParser  parser = JsonParser(incomingJsonObjectString);
     Json json = parser.parseJson();
     Json controllerJson = json["controllerMethod"];
+
+    TTTController controller;
 
     std::string controllerMethod = controllerJson["name"].stringValue();
     std::cout << controllerMethod << std::endl;
     Json inputJson = controllerJson["input"];
-    std::string out;
-    inputJson.dump(out);
-    std::cout << out; 
+
+    if (controllerMethod == "createPlayer") {
+        std::string playerJsonStr;
+        inputJson.dump(playerJsonStr);
+        controller.createPlayer(playerJsonStr);
+    }
 
 }

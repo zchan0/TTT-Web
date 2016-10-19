@@ -1,5 +1,7 @@
 #include <iostream>
+
 #include "TTTController.h"
+#include "../model/Json.h"
 
 Board* Board::instance = NULL;	// Singleton
 
@@ -18,9 +20,13 @@ void TTTController::createPlayer(std::string name, std::string marker, int playe
 /**
  * format of playerJsonObject: {name:string, marker:string, playerNum:int}
  */
-void TTTController::createPlayer(std::string playerJsonObject)
+void TTTController::createPlayer(std::string playerJsonStr)
 {
-	std::cout << playerJsonObject << std::endl;
+	std::cout << playerJsonStr << std::endl;
+	JsonParser parser  = JsonParser(playerJsonStr);
+	Json playerJson    = parser.parseJson();
+
+	createPlayer(playerJson["name"].stringValue(), playerJson["marker"].stringValue(), playerJson["playerNum"].intValue());
 }
 
 void TTTController::startNewGame()
@@ -34,7 +40,7 @@ void TTTController::startNewGame()
  * @param  gameJsonObject {row:int, col:int, int: currentPlayer }
  * @return                as below
  */
-bool TTTController::setSelection(std::string gameJsonObject)
+bool TTTController::setSelection(std::string gameJsonStr)
 {
 
 }
