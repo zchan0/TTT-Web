@@ -1,48 +1,30 @@
 var cgiPath = "cgi-bin/ttt.cgi";
 var rows = ["top", "", "bottom"];
 var markers = [];
+var currentPlayer = 1;
+var nextPlayer = 2;
 
 var xhttp = new XMLHttpRequest();
 
 var tttJsonObj = 
 {
-	controllerMethod:{},
 	players:[],
-	board:{},
-	game:{}
+	selections:[],
+	controllerMethods:[],
 };
-
-callback();
 
 function callback() {	
 	/**Handle the returned JSON string; after xhttp.send() finishes**/
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-			console.log(this.responseText);
 			var retJsonObj = JSON.parse(this.responseText);
-			console.log(retJsonObj);
-
-			// Set players info
-			var players = retJsonObj.players;
-			for (var i = 0; i < players.length; i++) {
-				var player = players[i];
-				setPlayerInfo(i + 1, player.name, player.marker);
-			}
-
-			// Set selection
-			var game = retJsonObj.game;
-			setSelection(game.row, game.col, markers[game.currentPlayer]);
-			setWinner(0);
+			if (retJsonObj["winner"] != 0)
+				setWinner(retJsonObj["winner"]);
 		}
 	};
 
   xhttp.open("POST", cgiPath, true);  
-  xhttp.send();
-}
-
-function send() {
-	xhttp.open("POST", cgiPath, true);  
-	xhttp.send(JSON.stringify(tttJsonObj));	
+  xhttp.send(JSON.stringify(tttJsonObj));
 }
 
 function toggleDisplay(divElement) {
@@ -55,11 +37,38 @@ function toggleDisplay(divElement) {
 /** Make Request Helpers */
 
 function reset() {
-	console.log("reset");
+	// reset UI
+	// reset controllerMethods
 }
 
 function clickSquare(event) {
-	console.log(event.target.className);
+	// if (playerOne.length == 8 || playerTwo.length == 8) {
+	// 	alert("Need add new player");
+	// }
+
+	var pos = event.target.id;
+	var row = parseInt(pos[0], 10);
+	var col = parseInt(pos[1], 10);
+	setSelection(row, col, markers[currentPlayer]);
+
+	var square = {};
+	square.row = row;
+	square.col = col;
+	square.currentPlayer = currentPlayer;
+	newTurn();
+
+	var controllerMethod = {};
+	controllerMethod.name  = "setSelection";
+	controllerMethod.input = square;
+	tttJsonObj.controllerMethods.push(controllerMethod);
+
+	callback();
+}
+
+function newTurn() {
+	var temp = currentPlayer;
+	currentPlayer = nextPlayer;
+	nextPlayer = temp;
 }
 
 function addNewPlayer() {
@@ -67,13 +76,18 @@ function addNewPlayer() {
 	var playerTwo = document.getElementsByClassName("player two")[0].innerHTML;
 	var name   = document.getElementById("name").value;
 	var marker = document.getElementById("marker").value;
+
+	// 8 means not set player yet
 	if (playerOne.length == 8) {
+		setPlayerInfo(1, name, marker);
 		populatePlayer(1, name, marker);
 	} else if (playerTwo.length == 8) {
+		setPlayerInfo(2, name, marker);
 		populatePlayer(2, name, marker);
 	} else {
 		alert("There are already two players, start play!");
 	}
+	toggleDisplay(addPlayerDiv);
 }
 
 function populatePlayer(num, name, marker) {
@@ -81,25 +95,28 @@ function populatePlayer(num, name, marker) {
 	player.name   = name;
 	player.marker = marker;
 	player.playerNum = num;
-	tttJsonObj.controllerMethod.name  = "createPlayer";
-	tttJsonObj.controllerMethod.input = player;
-	xhttp.open("POST", cgiPath, true);  
-	xhttp.send(JSON.stringify(tttJsonObj));
+
+	var controllerMethod = {};
+	controllerMethod.name  = "createPlayer";
+	controllerMethod.input = player;
+ 	tttJsonObj.controllerMethods.push(controllerMethod);
 }
 
 /** Hanldle Responses */
 
 function setSelection(row, col, marker) {
 	// to determin which square
-	var rowName = "square" + " " + (rows[row - 1] === undefined ? "" : rows[row - 1]);
-	document.getElementsByClassName(rowName)[col - 1].innerHTML = marker;
+	var id = row * 10 + col;
+	document.getElementById(id.toString()).innerHTML = marker;
 }
 
 function setWinner(winner) {
 	var winnerStr  = '' + winner; 
 	var info = "";
-	if (winner != 0) {
+	if (winner != 0 && winner != 3) {
 		info = "Player " + winnerStr + " won!  ";
+	} else {
+		info = "Tied!";
 	}
 	document.getElementById("winner").innerHTML = info;
 }
@@ -109,7 +126,6 @@ function setPlayerInfo(num, name, marker) {
 	markers[num] = marker;
 
 	var info = "Player " + num + ": " + name + " (" + marker + ")";
-	console.log(info);
 
 	if (num == 1) {
 		document.getElementsByClassName("player one")[0].innerHTML = info;

@@ -44,6 +44,16 @@ Json::Type Json::type() const
 	return json_type;
 }
 
+int Json::size() const
+{
+	if (json_type == ARRAY) {
+		return array_items.size();
+	}
+	if (json_type == OBJECT) {
+		return object_items.size();
+	}
+}
+
 int Json::intValue() const
 {
 	if (json_type == NUMBER)

@@ -51,7 +51,12 @@ void TTTController::startNewGame()
  */
 bool TTTController::setSelection(std::string gameJsonStr)
 {
+	JsonParser parser = JsonParser(gameJsonStr);
+	Json gameJson = parser.parseJson();
 
+	int row = gameJson["row"].intValue() - 1;
+	int col = gameJson["col"].intValue() - 1;
+	return setSelection(row, col, gameJson["currentPlayer"].intValue());	
 }
 
 /**
@@ -96,15 +101,15 @@ bool TTTController::setSelection(int row, int col, int currentPlayer)
 int TTTController::determineWinner()
 {
 	if (A.hasWon()) {
-		std::cout << "Game over. Player " << A.getName() << " won!" << std::endl;
+		// std::cout << "Game over. Player " << A.getName() << " won!" << std::endl;
 		return 1;
 	}
 	if (B.hasWon()) {
-		std::cout << "Game over. Player " << B.getName() << " won!" << std::endl;
+		// std::cout << "Game over. Player " << B.getName() << " won!" << std::endl;
 		return 2;
 	}
 	if (Board::getInstance() -> getAvailableSquares() == 0) {
-		std::cout << "Game over in a tie." << std::endl;
+		// std::cout << "Game over in a tie." << std::endl;
 		return 3;
 	}
 	return 0;

@@ -33,6 +33,7 @@ class Json
 
 		/** Accessors */ 
 		Type type() const;
+		int size() const;
 		int intValue() const;
 		bool boolValue() const;
 		array  arrayItems() const;
