@@ -54,9 +54,14 @@ bool TTTController::setSelection(std::string gameJsonStr)
 	JsonParser parser = JsonParser(gameJsonStr);
 	Json gameJson = parser.parseJson();
 
-	int row = gameJson["row"].intValue() - 1;
-	int col = gameJson["col"].intValue() - 1;
-	return setSelection(row, col, gameJson["currentPlayer"].intValue());	
+	int row = gameJson["row"].intValue();
+	int col = gameJson["col"].intValue();
+
+	DataManager& dataManager = DataManager::getInstance();
+	std::string str = "{\"row\": \"" + row + "\", \"col\": \"" + col + "\", \"marker\": \"" + marker + "\"}"; 
+	dataManager.write(gameBoardFilename, str);	
+
+	return setSelection(row - 1, col - 1, gameJson["currentPlayer"].intValue());	
 }
 
 /**
@@ -121,7 +126,10 @@ int TTTController::determineWinner()
 std::string TTTController::getGameDisplay(bool isJson)
 {
 	if (isJson) {
-		
+		DataManager& dataManager = DataManager::getInstance();
+		std::string out;
+		dataManager.read(gameBoardFilename, out);
+		return 	"{\"gameBoard\":" + out + "}";
 	} else {
 		getGameDisplay();
 	}
