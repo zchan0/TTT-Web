@@ -3,6 +3,7 @@ var rows = ["top", "", "bottom"];
 var markers = [];
 var currentPlayer = 1;
 var nextPlayer = 2;
+var gameover = false;
 
 var xhttp = new XMLHttpRequest();
 
@@ -18,8 +19,10 @@ function callback() {
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			var retJsonObj = JSON.parse(this.responseText);
-			if (retJsonObj["winner"] != 0)
+			if (retJsonObj["winner"] != 0) {
 				setWinner(retJsonObj["winner"]);
+				gameover = true;
+			}
 		}
 	};
 
@@ -29,6 +32,8 @@ function callback() {
 
 function resetGame() {
 	// reset UI
+
+	gameover = false;
 	
 	setSelection(1, 1, "");
 	setSelection(1, 2, "");
@@ -59,6 +64,10 @@ function clickSquare(event) {
 	var playerTwo = document.getElementsByClassName("player two")[0].innerHTML;
 	if (playerOne.length == 8 || playerTwo.length == 8) {
 		alert("Need add new player");
+	}
+
+	if (gameover) {
+		return;
 	}
 
 	var pos = event.target.id;
