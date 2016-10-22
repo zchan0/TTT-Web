@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "../model/Player.h"
 #include "../model/Board.h"
 
