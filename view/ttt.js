@@ -30,7 +30,7 @@ function callback() {
 			var players = retJsonObj.players;
 			if (players) {
 				for (i = 0; i < players.length; i++) {
-					setPlayerInfo(players.length - i, players[i].name, players[i].marker);
+					setPlayerInfo(players[i].playerNum, players[i].name, players[i].marker);
 				}
 			}
 

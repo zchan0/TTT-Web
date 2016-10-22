@@ -44,17 +44,11 @@ void TTTController::createPlayer(std::string playerJsonStr)
 	std::string name   = playerJson["name"].stringValue();
 	std::string marker = playerJson["marker"].stringValue();
 	
-	createPlayer(name, marker, playerNum);
+	createPlayer(playerJson["name"].stringValue(), playerJson["marker"].stringValue(), playerJson["playerNum"].intValue());
 	
 	// persist new player
-	Json::object player;
-	player["name"] = Json(name);
-	player["marker"] = Json(marker);
-	std::string out;
-	Json(player).dump(out);
-
 	DataManager &dataManager = DataManager::getInstance();
-	dataManager.write(playersFilename, out);	
+	dataManager.write(playersFilename, playerJsonStr);	
 }
 
 void TTTController::startNewGame()
