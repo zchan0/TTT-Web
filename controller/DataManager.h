@@ -1,13 +1,25 @@
 class DataManager
 {
 	public:
+
+		enum ReadMode { 
+			ALL, // whole file
+			LASTONE, // the last one line
+			LASTTWO  // the last two lines, for players creating, only two players
+		};
+
 		static DataManager& getInstance();
 
-		/**
-		 * out is an array
+		/** 
+		 * default set mode to ALL
 		 */
 		void read(const std::string &filename, std::string &out);
-		void read(const std::string &filename, std::string &out, bool lastline);
+
+		/** 
+		 * mode == LASTONE, out is json object string
+		 * mode == LASTTWO || ALL, out is json array string
+		 */
+		void read(const std::string &filename, std::string &out, ReadMode mode);
 
 		/**
 		 * append by new line if str doesn't exist

@@ -6,16 +6,6 @@
 #include "DataManager.h"
 #include "../model/Json.h"
 
-namespace patch
-{
-    template <typename T> std::string to_string( const T& n )
-    {
-        std::ostringstream stm ;
-        stm << n ;
-        return stm.str() ;
-    }
-}
-
 Board* Board::instance = NULL;	// Singleton
 static const std::string playersFilename   = "players.txt";
 static const std::string gameBoardFilename = "board.txt";
@@ -58,13 +48,13 @@ void TTTController::startNewGame()
 	B.reset();
 
 	// clear persist data
-	DataManager &dataManager = DataManager::getInstance();
-	dataManager.empty(playersFilename);
-	dataManager.empty(gameBoardFilename);
+	// DataManager &dataManager = DataManager::getInstance();
+	// dataManager.empty(playersFilename);
+	// dataManager.empty(gameBoardFilename);
 }
 
 /**
- * @param  gameJsonObject {row:int, col:int, int: currentPlayer }
+ * @param  gameJsonObject {row:int, col:int, int: currentPlayer, string: marker }
  * @return                as below
  */
 bool TTTController::setSelection(std::string gameJsonStr)
@@ -78,7 +68,11 @@ bool TTTController::setSelection(std::string gameJsonStr)
 
 	bool validSelection = setSelection(row - 1, col - 1, num);
 	if (validSelection) {
-		std::string in = "{\"row\": " + patch::to_string(row) + ", \"col\": " + patch::to_string(col) + ", \"marker\": " + getMarkerByPlayerNum(num) + "}";
+		Json::object obj = gameJson.objectItems();
+		obj["marker"] = Json(getMarkerByPlayerNum(num));
+		Json json = Json(obj);
+		std::string in;
+		json.dump(in);
 		DataManager &dataManager = DataManager::getInstance();
 		dataManager.write(gameBoardFilename, in);
 	}
@@ -152,8 +146,7 @@ std::string TTTController::getGameDisplay(bool isJson)
 		int winner = determineWinner();
 		DataManager &dataManager = 	DataManager::getInstance();
 		dataManager.read(gameBoardFilename, gameboard);
-		dataManager.read(playersFilename, players);
-		return "{\"gameBoard\": " + gameboard + ", \"players\": " + players + ", \"winner\":" + patch::to_string(winner) + "}";
+		return "{\"gameBoard\": " + gameboard + "}";
 	} else {
 		return getGameDisplay();
 	}
@@ -171,7 +164,7 @@ std::string TTTController::getAllSavedPlayers()
 {
 	DataManager& dataManager = DataManager::getInstance();
 	std::string out;
-	dataManager.read(playersFilename, out);
+	dataManager.read(playersFilename, out, DataManager::LASTTWO);
 	return 	"{\"players\":" + out + "}";
 }
 

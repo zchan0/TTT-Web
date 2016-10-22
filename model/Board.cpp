@@ -56,13 +56,13 @@ bool Board::setSelection(int row, int col, int playerNum)
 {
 	// check if it is right turn
 	if (lastTurn != 0 && lastTurn == playerNum) {
-		std::cout << "Be patient. It's another guy's turn." << std::endl;
+		// std::cout << "Be patient. It's another guy's turn." << std::endl;
 		return false;
 	}
 
 	// if this square already has piece, it could not be selected.
 	if (squares[row * DIMENSION + col] != 0) {
-		std::cout << "This square already has a piece. Try another." << std::endl;
+		// std::cout << "This square already has a piece. Try another." << std::endl;
 		return false;
 	}
 
