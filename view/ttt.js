@@ -1,5 +1,6 @@
 var cgiPath = "cgi-bin/ttt.cgi";
-var markers = [];
+
+// some flags
 var currentPlayer = 1;
 var nextPlayer = 2;
 var gameover = false;
@@ -38,6 +39,8 @@ function callback() {
 		  var winner = retJsonObj.winner;
 		  if (winner) {
 		  	setWinner(winner);
+		  	if (winner != 0)
+		  		gameover = true;
 		  }
 		}
 	};
@@ -84,6 +87,7 @@ function clickSquare(event) {
 	var playerTwo = document.getElementsByClassName("player two")[0].innerHTML;
 	if (playerOne.length == 8 || playerTwo.length == 8) {
 		alert("Need add new player");
+		return;
 	}
 
 	if (gameover) {
@@ -98,12 +102,12 @@ function clickSquare(event) {
 	square.row = row;
 	square.col = col;
 	square.currentPlayer = currentPlayer;
-	newTurn();
 
 	tttJsonObj.controllerMethod.name  = "setSelection";
 	tttJsonObj.controllerMethod.input = square;
 
 	callback();
+	newTurn();
 }
 
 function newTurn() {
@@ -170,9 +174,6 @@ function setWinner(winner) {
 }
 
 function setPlayerInfo(num, name, marker) {
-	// store markers
-	markers[num] = marker;
-
 	var info = "Player " + num + ": " + name + " (" + marker + ")";
 
 	if (num == 1) {

@@ -15,9 +15,9 @@ static const std::string gameBoardFilename = "board.txt";
  */	
 void TTTController::createPlayer(std::string name, std::string marker, int playerNum)
 {
-	if (!A.isReady()) {
+	if (!A.isReady() && playerNum == 1) {
 		A = Player(name, marker, playerNum);
-	} else if (!B.isReady()) {
+	} else if (!B.isReady() && playerNum == 2) {
 		B = Player(name, marker, playerNum);
 	}
 }
