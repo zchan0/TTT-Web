@@ -16,5 +16,6 @@ class TTTController
 		bool setSelection(int row, int col, int currentPlayer);	
 		
 	private:
+		std::string getMarkerByPlayerNum(int playerNum) const;
 		Player A, B;
 };

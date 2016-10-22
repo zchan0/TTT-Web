@@ -52,6 +52,7 @@ int Json::size() const
 	if (json_type == OBJECT) {
 		return object_items.size();
 	}
+	return 1;
 }
 
 int Json::intValue() const

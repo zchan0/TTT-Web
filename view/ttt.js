@@ -1,5 +1,4 @@
 var cgiPath = "cgi-bin/ttt.cgi";
-var rows = ["top", "", "bottom"];
 var markers = [];
 var currentPlayer = 1;
 var nextPlayer = 2;
@@ -9,20 +8,37 @@ var xhttp = new XMLHttpRequest();
 
 var tttJsonObj = 
 {
-	players:[],
-	selections:[],
-	controllerMethods:[],
+	controllerMethod: {}				
 };
 
 function callback() {	
 	/**Handle the returned JSON string; after xhttp.send() finishes**/
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
+			console.log(this.responseText);
+
 			var retJsonObj = JSON.parse(this.responseText);
-			if (retJsonObj["winner"] != 0) {
-				setWinner(retJsonObj["winner"]);
-				gameover = true;
+			console.log(retJsonObj);
+			// gameBoard 
+			var gameBoard  = retJsonObj.gameBoard;
+			if (gameBoard) {
+				for (i = 0; i < gameBoard.length; i++) 
+					setSelection(gameBoard[i].row, gameBoard[i].col, gameBoard[i].marker);		
 			}
+			
+			// players
+			var players = retJsonObj.players;
+			if (players) {
+				for (i = 0; i < players.length; i++) {
+					setPlayerInfo(players.length - i, players[i].name, players[i].marker);
+				}
+			}
+
+			// winner
+		  var winner = retJsonObj.winner;
+		  if (winner) {
+		  	setWinner(winner);
+		  }
 		}
 	};
 
@@ -32,8 +48,9 @@ function callback() {
 
 function resetGame() {
 	// reset UI
-
 	gameover = false;
+	nextPlayer = 2;
+	currentPlayer = 1;
 	
 	setSelection(1, 1, "");
 	setSelection(1, 2, "");
@@ -46,8 +63,11 @@ function resetGame() {
 	setSelection(3, 3, "");
 
 	setWinner(0);
-	// reset controllerMethods
-	tttJsonObj.controllerMethods = [];
+
+	// call backend restart
+	tttJsonObj.controllerMethod.name  = "startNewGame";	 
+	tttJsonObj.controllerMethod.input = "";
+	callback();
 }
 
 function toggleDisplay(divElement) {
@@ -73,18 +93,15 @@ function clickSquare(event) {
 	var pos = event.target.id;
 	var row = parseInt(pos[0], 10);
 	var col = parseInt(pos[1], 10);
-	setSelection(row, col, markers[currentPlayer]);
-
 	var square = {};
+
 	square.row = row;
 	square.col = col;
 	square.currentPlayer = currentPlayer;
 	newTurn();
 
-	var controllerMethod = {};
-	controllerMethod.name  = "setSelection";
-	controllerMethod.input = square;
-	tttJsonObj.controllerMethods.push(controllerMethod);
+	tttJsonObj.controllerMethod.name  = "setSelection";
+	tttJsonObj.controllerMethod.input = square;
 
 	callback();
 }
@@ -103,15 +120,16 @@ function addNewPlayer() {
 
 	// 8 means not set player yet
 	if (playerOne.length == 8) {
-		setPlayerInfo(1, name, marker);
 		populatePlayer(1, name, marker);
 	} else if (playerTwo.length == 8) {
-		setPlayerInfo(2, name, marker);
 		populatePlayer(2, name, marker);
 	} else {
 		alert("There are already two players, start play!");
 	}
+	// toggle & clear
 	toggleDisplay(addPlayerDiv);
+	document.getElementById("name").value = "";
+	document.getElementById("marker").value = "";
 }
 
 function populatePlayer(num, name, marker) {
@@ -120,10 +138,9 @@ function populatePlayer(num, name, marker) {
 	player.marker = marker;
 	player.playerNum = num;
 
-	var controllerMethod = {};
-	controllerMethod.name  = "createPlayer";
-	controllerMethod.input = player;
- 	tttJsonObj.controllerMethods.push(controllerMethod);
+	tttJsonObj.controllerMethod.name  = "createPlayer";
+	tttJsonObj.controllerMethod.input = player;
+	callback();
 }
 
 /** Hanldle Responses */
@@ -132,6 +149,10 @@ function setSelection(row, col, marker) {
 	// to determin which square
 	if (marker === undefined) {
 		return;
+	}
+	// truncate to show one character
+	if (marker.length > 1) {
+		marker = marker.substr(0, 1);
 	}
 	var id = row * 10 + col;
 	document.getElementById(id.toString()).innerHTML = marker;

@@ -1,8 +1,20 @@
 #include <iostream>
+#include <string>
+#include <sstream>
 
 #include "TTTController.h"
 #include "DataManager.h"
 #include "../model/Json.h"
+
+namespace patch
+{
+    template <typename T> std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
 
 Board* Board::instance = NULL;	// Singleton
 static const std::string playersFilename   = "players.txt";
@@ -25,17 +37,24 @@ void TTTController::createPlayer(std::string name, std::string marker, int playe
  */
 void TTTController::createPlayer(std::string playerJsonStr)
 {
-	// std::cout << playerJsonStr << std::endl;
 	JsonParser parser  = JsonParser(playerJsonStr);
 	Json playerJson    = parser.parseJson();
-
+  
+  int playerNum = playerJson["playerNum"].intValue();
 	std::string name   = playerJson["name"].stringValue();
 	std::string marker = playerJson["marker"].stringValue();
-	createPlayer(name, marker, playerJson["playerNum"].intValue());
 	
-	DataManager& dataManager = DataManager::getInstance();
-	std::string str = "{\"name\": \"" + name + "\",\"marker\": \"" + marker + "\"}"; 
-	dataManager.write(playersFilename, str);	
+	createPlayer(name, marker, playerNum);
+	
+	// persist new player
+	Json::object player;
+	player["name"] = Json(name);
+	player["marker"] = Json(marker);
+	std::string out;
+	Json(player).dump(out);
+
+	DataManager &dataManager = DataManager::getInstance();
+	dataManager.write(playersFilename, out);	
 }
 
 void TTTController::startNewGame()
@@ -43,6 +62,11 @@ void TTTController::startNewGame()
 	Board::getInstance() -> reset();
 	A.reset();
 	B.reset();
+
+	// clear persist data
+	DataManager &dataManager = DataManager::getInstance();
+	dataManager.empty(playersFilename);
+	dataManager.empty(gameBoardFilename);
 }
 
 /**
@@ -56,8 +80,16 @@ bool TTTController::setSelection(std::string gameJsonStr)
 
 	int row = gameJson["row"].intValue();
 	int col = gameJson["col"].intValue();
+	int num = gameJson["currentPlayer"].intValue();
 
-	return setSelection(row - 1, col - 1, gameJson["currentPlayer"].intValue());	
+	bool validSelection = setSelection(row - 1, col - 1, num);
+	if (validSelection) {
+		std::string in = "{\"row\": " + patch::to_string(row) + ", \"col\": " + patch::to_string(col) + ", \"marker\": " + getMarkerByPlayerNum(num) + "}";
+		DataManager &dataManager = DataManager::getInstance();
+		dataManager.write(gameBoardFilename, in);
+	}
+
+	return validSelection;	
 }
 
 /**
@@ -122,9 +154,14 @@ int TTTController::determineWinner()
 std::string TTTController::getGameDisplay(bool isJson)
 {
 	if (isJson) {
-
+		std::string players, gameboard;
+		int winner = determineWinner();
+		DataManager &dataManager = 	DataManager::getInstance();
+		dataManager.read(gameBoardFilename, gameboard);
+		dataManager.read(playersFilename, players);
+		return "{\"gameBoard\": " + gameboard + ", \"players\": " + players + ", \"winner\":" + patch::to_string(winner) + "}";
 	} else {
-		getGameDisplay();
+		return getGameDisplay();
 	}
 }
 
@@ -142,4 +179,16 @@ std::string TTTController::getAllSavedPlayers()
 	std::string out;
 	dataManager.read(playersFilename, out);
 	return 	"{\"players\":" + out + "}";
+}
+
+std::string TTTController::getMarkerByPlayerNum(int playerNum) const
+{
+	switch(playerNum) {
+		case 1:
+		 return A.getMarker(); break;
+		case 2: 
+		 return B.getMarker(); break;
+		default:
+			return "-1"; break;
+	}
 }
